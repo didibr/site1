@@ -3890,3 +3890,9 @@ input, select, textarea {
 			}
 
 		}
+
+#ai_load{
+ position: absolute;
+ margin-left: 25em;
+ /*background: radial-gradient(rgba(255,255,255,0.64),rgba(255,255,255,0.0));*/
+}
