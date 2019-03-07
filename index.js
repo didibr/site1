@@ -3,6 +3,7 @@ $(document).ready(function(){
 	var dcheight=Math.round($('#intro').height());
 	//$('#one').css('height',dcheight+'px');
 	//console.log($('#intro').height());
+	$( "#admtabs" ).tabs();
 });
 
 

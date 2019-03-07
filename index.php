@@ -66,12 +66,13 @@ if(isset($_POST['CADASTRAR'])){
 		<title><?php echo $SITE_TITLE;?></title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="/css/jquery-ui.css" />
 		<link rel="stylesheet" href="css/main.css" />
 		<noscript><link rel="stylesheet" href="css/noscript.css" /></noscript>
 	</head>
 	<body class="is-preload">
 
-		<!-- Sidebar -->
+		<!-- Sidebar MENU -->
 			<section id="sidebar">
 				<div class="inner">
 					<nav>
@@ -79,24 +80,25 @@ if(isset($_POST['CADASTRAR'])){
 							<li><a href="#intro">Converse</a></li>
 							<?php
 							if(isset($_SESSION["LOGUED"])){
-							 echo '<li><a href="#logoff">Deslogar</a></li>';	
+							 echo '<li><a href="#logoff">Deslogar</a></li>';
+							 echo '<li><a href="#two">Comandos</a></li>';
 							  if($_SESSION["LOGUED"]['acesso']==1)
-								 echo '<li><a href="#two">Comandos</a></li>';
+								 echo '<li><a href="#three">Admin</a></li>';
 							}else{
 							 echo '<li><a href="#one">Login</a></li>';	
 							}
 							?>							
 							
-							<li><a href="#three">Contato</a></li>
+							<li><a href="#four">Contato</a></li>
 						</ul>
 					</nav>
 				</div>
 			</section>
 
-		<!-- Wrapper -->
+		<!-- Wrapper DOCUMENTO -->
 			<div id="wrapper">
 
-				<!-- Intro -->
+				<!-- Intro - CONVERSE -->
 					<section id="intro" class="wrapper style1 fullscreen fade-up">
 						<div class="inner">
 						<div id="ai_load" class="fade-up" style="display:none">
@@ -124,13 +126,16 @@ if(isset($_POST['CADASTRAR'])){
 		<?php
 		if(isset($_SESSION["LOGUED"])){
 		?>
+		            <!-- DIV DESLOGAR -->
                     <section id="logoff" class="wrapper style2 fullscreen">
 						<section id="one_login">
 							<div class="content">
 								<div class="inner" align="center">
 									<h2>Login</h2>
+									<div class="row" align="center" style="display: block;">  
 									<div class="col-5 col-12-xsmall" style="margin-top: 0.5em;">
-											<a href="JAVASCRIPT:Logout();" class="button icon fa-check" style="width: 50%;">Sair</a>
+											<a href="JAVASCRIPT:Logout();" class="button icon fa-power-off" style="width: 50%;">Sair</a>
+									</div>
 									</div>
 								</div>
 							</div>
@@ -139,7 +144,7 @@ if(isset($_POST['CADASTRAR'])){
 		<?php
 		}else{		
 		?>
-				<!-- One -->
+				    <!-- DIV LOGAR -->
 					<section id="one" class="wrapper style2 fullscreen">
 						<section id="one_login">
 							<div class="content">
@@ -156,7 +161,7 @@ if(isset($_POST['CADASTRAR'])){
 											<a href="JAVASCRIPT:Logar();" class="button icon fa-check" style="width: 50%;">Entrar</a>
 										</div>
 										<div class="col-5 col-12-xsmall" style="margin-top: 0.5em;">
-											<a href="JAVASCRIPT:SwapToLogin(1);" class="button icon fa-book" style="width: 50%;">Cadastrar</a>
+											<a href="JAVASCRIPT:SwapToLogin(1);" class="button icon fa-address-card" style="width: 50%;">Cadastrar</a>
 										</div>
 										
 									</div>
@@ -238,9 +243,10 @@ if(isset($_POST['CADASTRAR'])){
 					</section>
         <?php
 		}
+		if(isset($_SESSION["LOGUED"])){							
         ?>
 
-				<!-- Two -->
+				<!-- LISTA DE COMANDOS -->
 					<section id="two" class="wrapper style3 fade-up">
 						<div class="inner">
 							<h2>Comandos</h2>
@@ -282,9 +288,103 @@ if(isset($_POST['CADASTRAR'])){
 							</ul>
 						</div>
 					</section>
+		<?php
+			if($_SESSION["LOGUED"]['acesso']==1){							
+		?>
+		          <!-- Three - Ações de ADMIN -->
+					<section id="three" class="wrapper style4 fade-up">
+						<div class="inner">
+							<h2>Admin</h2>
+							<p>Ações a serem tomadas quando pergunta for feita.</p>
+							<div class="split style1">
+								<section>
+<!--TABVIEW -->									
+<div id="admtabs">
+  <ul>
+    <li><a href="#tabs-1">Perguntas</a></li>
+    <li><a href="#tabs-2">Respostas</a></li>    
+  </ul>		
+	<!--TABVIEW TAB1 -->
+	<div id="tabs-1">
+								
+									<table class="alt">
+									<thead><tr><th>ID</th><th>Pergunta</th><th>Resp</th></tr></thead><tbody>
+<?php
+  $DATABASE='db/data.db';  
+  $error = array(array('I'=>'99','R'=>'','L'=>'Cannot Open DataBase'));
+  $query = new PDO('sqlite:'.$DATABASE) or die(json_encode($textbot));
+  $comand = "SELECT perguntas.id,entrada,pergunta,respostas.resposta,respostas.id as idr FROM perguntas ".
+            "LEFT JOIN  respostas on  perguntas.resposta_id = respostas.id";
+  $tabelas = $query->query($comand);  
+  $respostas='';				
+  	foreach ($tabelas as $row){
+				
+  ?>
+											<tr>
+												<td><?php echo $row['id'];?></td>
+												<td><?php echo $row['entrada'];?></td>
+												<td><?php echo $row['idr'];?></td>
+											</tr>										
+  <?php 
+		if($row['idr']!=null){
+			$respostas.="<tr><td>".$row['idr']."</td>".
+			"<td>".$row['resposta']."</td>".
+			"<td>".$row['id']."</td></tr>";
+		}
+	} ?>
+											   
+										
+										
+									</tbody><tfoot><tr><td></td><td></td><td></td></tr></tfoot>
+									</table>
+	</div>
+	
+	<!--TABVIEW TAB2 -->
+	<div id="tabs-2">
+									<table class="alt">
+									<thead><tr><th>ID</th><th>Resposta</th><th>Perg</th></tr></thead><tbody>
+  <?php
+	echo $respostas;
+  ?>		
+											
+									</tbody><tfoot><tr><td></td><td></td><td></td></tr></tfoot>
+									</table>
+		
+	</div>
+									
+									
+								</section>
+									
+									
+								<section>
+								<div class="row" align="center" style="display: block;">  
+										<div class="col-12 col-12-xsmall">											
+											<a href="#" class="button" >Default</a>
+										</div>
+										<div class="col-12 col-12-xsmall" style="margin-top: 0.5em;">
+											<a href="#" class="button" >Default</a>
+										</div>
+										<div class="col-12 col-12-xsmall" style="margin-top: 0.5em;">
+											<a href="#" class="button" >Default</a>
+										</div>
+										<div class="col-12 col-12-xsmall" style="margin-top: 0.5em;">
+											<a href="#" class="button" >Default</a>
+										</div>
+								</div>
+										
+					
+								</section>
+							</div>
+						</div>
+					</section>
+		<?php
+				}
+		 }
+		?>
+		
 
-				<!-- Three -->
-					<section id="three" class="wrapper style1 fade-up">
+				<!-- Four -->
+					<section id="four" class="wrapper style1 fade-up">
 						<div class="inner">
 							<h2>Contato</h2>
 							<p>Preencha o formulário abaixo para entrar em contato.<br>Não armazenamos currículos em nosso banco de dados.</p>
@@ -372,6 +472,7 @@ if(isset($_POST['CADASTRAR'])){
 			<script src="/js/breakpoints.min.js"></script>
 			<script src="/js/util.js"></script>
 			<script src="/js/main.js"></script>
+	        <script src="/js/jquery-ui.js"></script>
 		    <script src="/index.js"></script>
 
 	</body>

@@ -3248,6 +3248,13 @@ input, select, textarea {
 		.wrapper.style3-alt {
 			background-color: #953d75;
 		}
+		.wrapper.style4 {
+			background-color: #5087b5;
+		}
+
+		.wrapper.style4-alt {
+			background-color: #306488;
+		}
 
 		.wrapper.fullscreen {
 			display: -moz-flex;
@@ -3895,4 +3902,10 @@ input, select, textarea {
  position: absolute;
  margin-left: 25em;
  /*background: radial-gradient(rgba(255,255,255,0.64),rgba(255,255,255,0.0));*/
+}
+.bdown{
+ border-bottom: solid 2px rgba(212,209,209,0.88);
+}
+.ptop{
+  margin-bottom: 4px;	
 }
