@@ -3136,7 +3136,7 @@ input, select, textarea {
 		}
 
 			table tbody tr:nth-child(2n + 1) {
-				background-color: rgba(255, 255, 255, 0.05);
+				/*background-color: rgba(255, 255, 255, 0.05);*/
 			}
 
 		table td {
@@ -3908,4 +3908,19 @@ input, select, textarea {
 }
 .ptop{
   margin-bottom: 4px;	
+}
+#tabs-1,#tabs-2{	
+	height: 40em;
+}
+.pclick{
+	cursor: pointer;
+}
+.pclick:hover{
+	background-color: rgba(252,252,252,0.28);	
+}
+.tsel,.tsel:hover{
+	background-color: rgba(243,8,12,1.00);
+	-webkit-transition: background-color 20ms linear;
+    -ms-transition: background-color 20ms linear;
+    transition: background-color 1000ms linear;
 }

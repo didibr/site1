@@ -67,6 +67,7 @@ if(isset($_POST['CADASTRAR'])){
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="/css/jquery-ui.css" />
+		<link rel="stylesheet" href="/css/simplebar.css" />
 		<link rel="stylesheet" href="css/main.css" />
 		<noscript><link rel="stylesheet" href="css/noscript.css" /></noscript>
 	</head>
@@ -305,9 +306,9 @@ if(isset($_POST['CADASTRAR'])){
     <li><a href="#tabs-2">Respostas</a></li>    
   </ul>		
 	<!--TABVIEW TAB1 -->
-	<div id="tabs-1">
+	<div id="tabs-1" data-simplebar>
 								
-									<table class="alt">
+									<table class="alt" >
 									<thead><tr><th>ID</th><th>Pergunta</th><th>Resp</th></tr></thead><tbody>
 <?php
   $DATABASE='db/data.db';  
@@ -320,7 +321,7 @@ if(isset($_POST['CADASTRAR'])){
   	foreach ($tabelas as $row){
 				
   ?>
-											<tr>
+											<tr class="pclick" onClick="SelectP(this);">
 												<td><?php echo $row['id'];?></td>
 												<td><?php echo $row['entrada'];?></td>
 												<td><?php echo $row['idr'];?></td>
@@ -340,7 +341,7 @@ if(isset($_POST['CADASTRAR'])){
 	</div>
 	
 	<!--TABVIEW TAB2 -->
-	<div id="tabs-2">
+	<div id="tabs-2" data-simplebar>
 									<table class="alt">
 									<thead><tr><th>ID</th><th>Resposta</th><th>Perg</th></tr></thead><tbody>
   <?php
@@ -473,6 +474,7 @@ if(isset($_POST['CADASTRAR'])){
 			<script src="/js/util.js"></script>
 			<script src="/js/main.js"></script>
 	        <script src="/js/jquery-ui.js"></script>
+		    <script src="/js/simplebar.js"></script>
 		    <script src="/index.js"></script>
 
 	</body>

@@ -140,3 +140,14 @@ function PushTalk(){
 		getResponse(data[0]);
     }});	
 }
+
+function SelectP(obj){
+	var tabela=$(obj).closest('table');	
+	$(obj).addClass('tsel');
+	$(tabela).find('> tbody > tr').each(function(){
+		if($(this).hasClass('tsel')){
+			if($(this)[0]!=$(obj)[0])
+			$(this).removeClass('tsel');			
+		}
+	});	
+}
