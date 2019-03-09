@@ -141,13 +141,82 @@ function PushTalk(){
     }});	
 }
 
-function SelectP(obj){
-	var tabela=$(obj).closest('table');	
-	$(obj).addClass('tsel');
-	$(tabela).find('> tbody > tr').each(function(){
-		if($(this).hasClass('tsel')){
-			if($(this)[0]!=$(obj)[0])
+function ClickPergunta(idp,idr){
+   $('#PP').find('> tbody > tr').each(function(){	   
+	   var perg=$($(this).find('td')[0]).text().trim();
+	   var resp=$($(this).find('td')[2]).text().trim();
+		if(idp==perg || idr==resp){
+			$(this).addClass('tsel');
+		}else{
+			$(this).removeClass('tsel');
+		}
+	});		
+}
+
+function ClickScript(id){
+   $('#SS').find('> tbody > tr').each(function(){	   
+	   var scri=$($(this).find('td')[0]).text().trim();
+		if(id==scri){
+			$(this).addClass('tsel');
+		}else{
+			$(this).removeClass('tsel');
+		}
+	});		
+}
+
+function ClickResponse(idr,ids){
+	var found=0;
+	var perguntas=[];
+   $('#RR').find('> tbody > tr').each(function(){
+	   var perg=$($(this).find('td')[0]).text().trim();
+	   var scri=$($(this).find('td')[2]).text().trim();	   
+		if(idr==perg || ids==scri){
+			perguntas.push(perg);
+			$(this).addClass('tsel');
+			ClickScript(scri);
+			found=1;
+		}else{
 			$(this).removeClass('tsel');			
 		}
 	});	
+ if(found==0)ClickScript(-1);
+ return perguntas;
+}
+
+function SelectPergunta(tabela,tr){
+    tr.addClass('tsel');
+	tabela.find('> tbody > tr').each(function(){
+		if($(this).hasClass('tsel')){
+			if($(this)[0]!=tr[0])
+			$(this).removeClass('tsel');			
+		}
+	});		
+	var resposta=$(tr.find('td')[2]).text().trim();
+	return resposta;
+}
+
+//ACOES DE CLICK NOS MENUS DE SCRIPT
+function SelectP(obj){ 
+	var tabela=$(obj).closest('table');		
+	if($(tabela).attr('id')=='PP'){
+		var resp=SelectPergunta($(tabela),$(obj));
+		ClickResponse(resp,-1);
+	}
+	if($(tabela).attr('id')=='RR'){
+		var scri=SelectPergunta($(tabela),$(obj));			
+		var resp=$($(obj).find('td')[0]).text().trim();
+		ClickScript(scri);		
+		ClickPergunta(-1,resp);		
+	}
+	if($(tabela).attr('id')=='SS'){		
+		var scri=$($(obj).find('td')[0]).text().trim();				
+		var pergarray=ClickResponse(-1,scri);		
+		if(pergarray.length==0){
+			ClickPergunta(-1,-1);
+			$($(obj)).addClass('tsel');
+		}
+		$.each(pergarray,function(index, value){
+			ClickPergunta(-1,value);
+		});
+	}
 }

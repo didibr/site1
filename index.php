@@ -304,35 +304,47 @@ if(isset($_POST['CADASTRAR'])){
   <ul>
     <li><a href="#tabs-1">Perguntas</a></li>
     <li><a href="#tabs-2">Respostas</a></li>    
+	<li><a href="#tabs-3">Scripts</a></li>  
   </ul>		
 	<!--TABVIEW TAB1 -->
 	<div id="tabs-1" data-simplebar>
 								
-									<table class="alt" >
+									<table class="alt" id="PP">
 									<thead><tr><th>ID</th><th>Pergunta</th><th>Resp</th></tr></thead><tbody>
 <?php
   $DATABASE='db/data.db';  
   $error = array(array('I'=>'99','R'=>'','L'=>'Cannot Open DataBase'));
   $query = new PDO('sqlite:'.$DATABASE) or die(json_encode($textbot));
-  $comand = "SELECT perguntas.id,entrada,pergunta,respostas.resposta,respostas.id as idr FROM perguntas ".
-            "LEFT JOIN  respostas on  perguntas.resposta_id = respostas.id";
-  $tabelas = $query->query($comand);  
-  $respostas='';				
+  $comand = "SELECT * FROM perguntas ";
+            //"LEFT JOIN  respostas on  perguntas.resposta_id = respostas.id ".
+	        //"LEFT JOIN  scripts on  respostas.script_id = scripts.id";	
+  $tabelas = $query->query($comand);    
+  $respostas='';	 			
+  $scripts='';			
   	foreach ($tabelas as $row){
 				
   ?>
-											<tr class="pclick" onClick="SelectP(this);">
+											<tr id="PP<?php echo $row['id'];?>" class="pclick" onClick="SelectP(this);">
 												<td><?php echo $row['id'];?></td>
 												<td><?php echo $row['entrada'];?></td>
-												<td><?php echo $row['idr'];?></td>
+												<td><?php echo $row['resposta_id'];?></td>
 											</tr>										
   <?php 
-		if($row['idr']!=null){
-			$respostas.="<tr><td>".$row['idr']."</td>".
+	}
+   $comand = "SELECT * FROM respostas ";             
+   $tabelas = $query->query($comand);  
+   foreach ($tabelas as $row){								
+			$respostas.="<tr id='RR{$row['id']}' class='pclick' onClick='SelectP(this);'><td>".$row['id']."</td>".
 			"<td>".$row['resposta']."</td>".
-			"<td>".$row['id']."</td></tr>";
-		}
-	} ?>
+			"<td>".$row['script_id']."</td></tr>";
+	}
+	$comand = "SELECT * FROM scripts ";             
+    $tabelas = $query->query($comand);  
+    foreach ($tabelas as $row){								
+			$scripts.="<tr id='SS{$row['id']}' class='pclick' onClick='SelectP(this);'><td>".$row['id']."</td>".
+			"<td>".$row['script']."</td></tr>";	
+	}
+	 ?>
 											   
 										
 										
@@ -342,8 +354,8 @@ if(isset($_POST['CADASTRAR'])){
 	
 	<!--TABVIEW TAB2 -->
 	<div id="tabs-2" data-simplebar>
-									<table class="alt">
-									<thead><tr><th>ID</th><th>Resposta</th><th>Perg</th></tr></thead><tbody>
+									<table class="alt" id="RR">
+									<thead><tr><th>ID</th><th>Resposta</th><th>script</th></tr></thead><tbody>
   <?php
 	echo $respostas;
   ?>		
@@ -351,6 +363,16 @@ if(isset($_POST['CADASTRAR'])){
 									</tbody><tfoot><tr><td></td><td></td><td></td></tr></tfoot>
 									</table>
 		
+	</div>
+	<div id="tabs-3" data-simplebar>
+									<table class="alt" id="SS">
+									<thead><tr><th>ID</th><th>Script</th></tr></thead><tbody>
+  <?php
+	echo $scripts;
+  ?>		
+											
+									</tbody><tfoot><tr><td></td><td></td></tr></tfoot>
+									</table>		
 	</div>
 									
 									
