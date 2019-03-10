@@ -102,6 +102,7 @@ function GetLemma($entrada){
 	Sentiment: ' . $sentiment['score'] . ', ' . $sentiment['magnitude'];
 	*/
 	//primeiro teste
+	$entrada = strtolower($entrada);
 	$annotation = $language->analyzeSyntax($entrada);
 	$lemmatext='';
 	foreach ($annotation->tokens() as $palavra) {
@@ -128,9 +129,30 @@ function GetLemma($entrada){
     return GetResponse($entrada,$textbot);
 }
 
+function BindEntry(){
+ $mode=$_POST['newitem'];	
+ $value1=$_POST['value1'];	
+ $value2=$_POST['value2'];
+ $comand = '';
+	if($value2[3]==0 && $value1[3]==1){ //add resp to perg
+		$resp=$value1[1];
+		$perg=$value2[0];
+		$comand= "UPDATE perguntas SET resposta_id={$resp} WHERE id={$perg};";
+	}
+	if($value2[3]==1 && $value1[3]==2){ //add script to resp
+		$scri=$value1[2];
+		$resp=$value2[1];
+		$comand= "UPDATE respostas SET script_id={$scri} WHERE id={$resp};";
+	}
+ $DATABASE='db/data.db';   
+ $query = new PDO('sqlite:'.$DATABASE) or die('Cannot Open DataBase');
+ $query->query($comand);  
+ die('OK');
+}
 
 function NewEntry(){
- $mode=$_POST['newitem'];	
+ $mode=$_POST['newitem'];
+ if($mode=='Bind'){BindEntry();return;}
  $value=$_POST['value'];
  //$value=str_replace("'",'`',$value);
  $DATABASE='db/data.db';   
@@ -157,7 +179,7 @@ function NewEntry(){
    }
  }		
   $query->query($comand);  
-	//die($comand);
+  if($comand2!='') $query->query($comand2);  	
   die('OK');
 }
 

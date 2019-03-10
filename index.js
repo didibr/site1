@@ -1,9 +1,15 @@
 // JavaScript Document
+var AISCSEL=[null,null,null,-1];
+var AISCBIND=[null,null,null,-1];
+var BIND=false;
+var meanresp=null;
+
+
 $(document).ready(function(){
 	var dcheight=Math.round($('#intro').height());
 	//$('#one').css('height',dcheight+'px');
 	//console.log($('#intro').height());
-	$( "#admtabs" ).tabs();
+	$( "#admtabs" ).tabs({active: 0});
 	onPress('#imail',function(){$('#isenha').focus();})	
 	onPress('#isenha',function(){Logar();});
 	onPress('#cad_nome',function(){$('#cad_cpf').focus();});
@@ -15,7 +21,63 @@ $(document).ready(function(){
 	onPress('#cad_nasc_dia',function(){$('#cad_nasc_mes').focus();});
 	onPress('#cad_nasc_mes',function(){$('#cad_nasc_ano').focus();});
 	onPress('#cad_nasc_ano',function(){Cadastrar();});	
+	onPress('#chattext',function(){PushTalk();});
+    loadlista();	
+	
+	$('.ttip').darkTooltip({
+        size:'small',
+        gravity: 'south',
+		opacity: 1,
+		theme:'light'
+      });
+	
 });
+
+
+function CheckClick(obj){	
+  $(obj).contextmenu(function(e) {	
+	 var itext;
+	 $(this).find('> tbody > tr:hover').each(function(){		
+		 itext=$(this);		
+	});		  
+	 if(obj=='#PP'){
+		 $('#bds').hide();
+		 $('#bdr').show();
+	 }
+	 if(obj=='#RR'){
+		 $('#bdr').hide();
+		 $('#bds').show();
+	 }	  
+	 if(obj=='#SS')return false;
+	  $.when($('#menuclick').remove()).then( 
+		$("<div class='popr' data-id='menu1' id='menuclick'></div>").appendTo(itext)	   
+	  );	  
+	  $('.popr').popr();
+	  $('#menuclick').click();	 	  
+     return false;
+   });
+}
+
+function loadlista(){
+	 /*$.when($('#menuhiden').remove()).then( 
+		  $('#menuhidendata').html(
+		  '<div id="menuhiden" style="display: none;" data-box-id="menu1">'+
+	  	  '<a id="bdr" href="JAVASCRIPT:bindResp(this);"><div class="popr-item">Bind Resposta</div></a>'+
+	  	  '<a id="bds" href="JAVASCRIPT:bindScri(this);"><div class="popr-item">Bind Script</div></a></div>')	  
+	  );*/
+	$('#listahiden1').load('lista.php?lista=P',function(){       
+		$('#PP').html($(this).html());		
+		CheckClick('#PP');				
+	});
+	$('#listahiden2').load('lista.php?lista=R',function(){       
+		$('#RR').html($(this).html());		
+		CheckClick('#RR');		
+	});
+	$('#listahiden3').load('lista.php?lista=S',function(){       
+		$('#SS').html($(this).html());	
+		CheckClick('#SS');		
+	});	
+}
 
 function MessageBox(text){
 	$.MessageBox({
@@ -47,13 +109,21 @@ function Rdi(radio){
 	$(radio).prop('checked', true);
 }
 
+
+
 function Logout(){
-  $.ajax({
-    type: 'POST',    
-    data: {'LOGOUT':'1'},
-    success: function(msg){
-        location.reload();
-    }});		
+		$.MessageBox({
+		buttonDone  : "Sim",
+		buttonFail  : "Nao",    	
+    	message  : 'Deseja Sair ?'
+		}).done(function(data){		
+		  $.ajax({
+    		type: 'POST',    
+    		data: {'LOGOUT':'1'},
+    		success: function(msg){
+        		location.reload();
+    		}});
+		}).fail();	
 }
 
 function Logar(){
@@ -95,7 +165,7 @@ function Cadastrar(){
 }
 
 
-var meanresp=null;
+
 function MeanResponse(){
 	var textsend=$('#chattext').val();	
 	textsend=textsend.toLowerCase().trim();
@@ -162,10 +232,11 @@ function PushTalk(){
 		$('#chattext').attr('disabled',null);
         var data=JSON.parse(msg);
 		getResponse(data[0]);
+		$('#chattext').val('').focus();
     }});	
 }
 
-var AISCSEL=[null,null,null,-1];
+
 
 function ClickPergunta(idp,idr){
   AISCSEL[0]=null;
@@ -275,9 +346,9 @@ function SelectP(obj){
 			ClickPergunta(-1,value);
 		});
 		AISCSEL[3]=2;
-	}
-	
-	console.log(AISCSEL);
+	}	
+	if(BIND==true)doBind();
+	//console.log(AISCSEL);
 }
 
 
@@ -298,6 +369,7 @@ function NovoEntry(rs){
 			'value':data['text1']		
 		  },success: function(msg){
               MessageBox(msg);
+			  loadlista();
           }});			
 		}).fail();
 }
@@ -332,8 +404,54 @@ function DeleteEntry(){
 		  $.ajax({type: 'POST',url: 'bot.php', data: { 
 			'newitem':'Delete',		
 			'value':AISCSEL		
-		  },success: function(msg){
+		  },success: function(msg){			  
               MessageBox(msg);
+			  loadlista();
           }});			
 		}).fail();
+}
+
+function bindResp(obj){	
+	//console.log(AISCSEL);
+	$('#menuclick').appendTo($('#listas'));
+	AISCBIND=AISCSEL.slice();
+	$( "#admtabs" ).tabs({active: 1});
+	MessageBox('Selecione a Resposta');
+	BIND=true;
+}
+
+function bindScri(obj){
+	//console.log(AISCSEL);
+	$('#menuclick').appendTo($('#listas'));
+	AISCBIND=AISCSEL.slice();
+	$( "#admtabs" ).tabs({active: 2});
+	MessageBox('Selecione o Script');
+	BIND=true;
+}
+
+function doBind(){	
+ 	var senddata=false;
+ 	if(AISCBIND[3]==0 && AISCSEL[3]==1)senddata=true;
+	if(AISCBIND[3]==1 && AISCSEL[3]==2)senddata=true;	
+ 	if(senddata==true){
+	    $.ajax({type: 'POST',url: 'bot.php', data: { 
+			'newitem':'Bind',		
+			'value1':AISCSEL,		
+			'value2':AISCBIND
+		  },success: function(msg){	
+			  //MessageBox(msg);
+			  loadlista();
+          }});				
+	}	
+ 	AISCBIND=[null,null,null,-1];
+ 	BIND=false;
+}
+
+function listaMenuSelect(num){
+	AISCSEL[3]=num;
+	if(num==2){
+		$('#scrhelp').show();
+	}else{
+		$('#scrhelp').hide();
+	}
 }

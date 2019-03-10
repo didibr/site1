@@ -69,6 +69,8 @@ if(isset($_POST['CADASTRAR'])){
 		<link rel="stylesheet" href="/css/jquery-ui.css" />
 		<link rel="stylesheet" href="/css/simplebar.css" />
 		<link rel="stylesheet" href="css/messagebox.min.css" />
+		<link rel="stylesheet" href="css/darktooltip.css" />
+		<link rel="stylesheet" href="css/popr.css" />
 		<link rel="stylesheet" href="css/main.css" />
 		<noscript><link rel="stylesheet" href="css/noscript.css" /></noscript>
 	</head>
@@ -82,7 +84,7 @@ if(isset($_POST['CADASTRAR'])){
 							<li><a href="#intro">Converse</a></li>
 							<?php
 							if(isset($_SESSION["LOGUED"])){
-							 echo '<li><a href="#logoff">Deslogar</a></li>';
+							 echo '<li><a href="JAVASCRIPT:Logout();">Deslogar</a></li>';
 							 echo '<li><a href="#two">Comandos</a></li>';
 							  if($_SESSION["LOGUED"]['acesso']==1)
 								 echo '<li><a href="#three">Admin</a></li>';
@@ -127,6 +129,7 @@ if(isset($_POST['CADASTRAR'])){
 
 		<?php
 		if(isset($_SESSION["LOGUED"])){
+			if(1!=1){ //só para nao mostrar tela de Deslogar
 		?>
 		            <!-- DIV DESLOGAR -->
                     <section id="logoff" class="wrapper style2 fullscreen">
@@ -144,6 +147,7 @@ if(isset($_POST['CADASTRAR'])){
 						</section>
 		       		</section>
 		<?php
+		}
 		}else{		
 		?>
 				    <!-- DIV LOGAR -->
@@ -299,85 +303,56 @@ if(isset($_POST['CADASTRAR'])){
 							<h2>Admin</h2>
 							<p>Ações a serem tomadas quando pergunta for feita.</p>
 							<div class="split style1">
-								<section>
-<!--TABVIEW -->									
+<section id="listas">
+<!--TABVIEW -->	
+	<div id="listahiden1" style="display: none;"></div>
+	<div id="listahiden2" style="display: none;"></div>
+	<div id="listahiden3" style="display: none;"></div>
+	<div id="menuhidendata" style="display: none;">	
+		<div id="menuhiden" style="display: none;" data-box-id="menu1">
+	  	<a id="bdr" href="JAVASCRIPT:bindResp(this);"><div class="popr-item">Bind Resposta</div></a>            
+	  	<a id="bds" href="JAVASCRIPT:bindScri(this);"><div class="popr-item">Bind Script</div></a>            
+		</div>
+	</div>
+	
 <div id="admtabs">
   <ul>
-    <li><a href="#tabs-1" onClick="AISCSEL[3]=0;">Perguntas</a></li>
-    <li><a href="#tabs-2" onClick="AISCSEL[3]=1;">Respostas</a></li>    
-	<li><a href="#tabs-3" onClick="AISCSEL[3]=2;">Scripts</a></li>  
+    <li><a href="#tabs-1" onClick="listaMenuSelect(0);">Perguntas</a></li>
+    <li><a href="#tabs-2" onClick="listaMenuSelect(1);">Respostas</a></li>    
+	<li><a href="#tabs-3" onClick="listaMenuSelect(2);">Scripts</a></li>  
+	<li id='scrhelp' style="display: none;">
+		<div class="icon major fa-clipboard ttip" style="display: inline-block;cursor: pointer;"
+			 data-tooltip='Variaveis do Script'></div>
+	</li>  	  
+	<li>
+		<div onClick="loadlista();" class="icon major fa-cloud-download ttip" data-tooltip='Atualizar'
+			 style="display: inline-block;cursor: pointer;"></div>
+	</li>  	
   </ul>		
 	<!--TABVIEW TAB1 -->
 	<div id="tabs-1" data-simplebar>
 								
 									<table class="alt" id="PP">
-									<thead><tr><th>ID</th><th>Pergunta</th><th>Resp</th></tr></thead><tbody>
-<?php
-  $DATABASE='db/data.db';  
-  $error = array(array('I'=>'99','R'=>'','L'=>'Cannot Open DataBase'));
-  $query = new PDO('sqlite:'.$DATABASE) or die(json_encode($textbot));
-  $comand = "SELECT * FROM perguntas ";
-            //"LEFT JOIN  respostas on  perguntas.resposta_id = respostas.id ".
-	        //"LEFT JOIN  scripts on  respostas.script_id = scripts.id";	
-  $tabelas = $query->query($comand);    
-  $respostas='';	 			
-  $scripts='';			
-  	foreach ($tabelas as $row){
-				
-  ?>
-											<tr id="PP<?php echo $row['id'];?>" class="pclick" onClick="SelectP(this);">
-												<td><?php echo $row['id'];?></td>
-												<td><?php echo $row['entrada'];?></td>
-												<td><?php echo $row['resposta_id'];?></td>
-											</tr>										
-  <?php 
-	}
-   $comand = "SELECT * FROM respostas ";             
-   $tabelas = $query->query($comand);  
-   foreach ($tabelas as $row){								
-			$respostas.="<tr id='RR{$row['id']}' class='pclick' onClick='SelectP(this);'><td>".$row['id']."</td>".
-			"<td>".$row['resposta']."</td>".
-			"<td>".$row['script_id']."</td></tr>";
-	}
-	$comand = "SELECT * FROM scripts ";             
-    $tabelas = $query->query($comand);  
-    foreach ($tabelas as $row){								
-			$scripts.="<tr id='SS{$row['id']}' class='pclick' onClick='SelectP(this);'><td>".$row['id']."</td>".
-			"<td>".$row['script']."</td></tr>";	
-	}
-	 ?>
-											   
-										
-										
-									</tbody><tfoot><tr><td></td><td></td><td></td></tr></tfoot>
+									
 									</table>
 	</div>
 	
 	<!--TABVIEW TAB2 -->
 	<div id="tabs-2" data-simplebar>
 									<table class="alt" id="RR">
-									<thead><tr><th>ID</th><th>Resposta</th><th>script</th></tr></thead><tbody>
-  <?php
-	echo $respostas;
-  ?>		
-											
-									</tbody><tfoot><tr><td></td><td></td><td></td></tr></tfoot>
+									
 									</table>
 		
 	</div>
+	<!--TABVIEW TAB3 -->
 	<div id="tabs-3" data-simplebar>
 									<table class="alt" id="SS">
-									<thead><tr><th>ID</th><th>Script</th></tr></thead><tbody>
-  <?php
-	echo $scripts;
-  ?>		
-											
-									</tbody><tfoot><tr><td></td><td></td></tr></tfoot>
+									
 									</table>		
 	</div>
 									
-									
-								</section>
+	</div>									
+</section>
 									
 									
 								<section>
@@ -391,7 +366,7 @@ if(isset($_POST['CADASTRAR'])){
 											<a href="JAVASCRIPT:NovoEntry('Script');" class="button bgreen" >ADD Script</a>
 										</div>										
 										<div class="col-12 col-12-xsmall" style="margin-top: 0.5em;">
-											<a href="#" class="button" >Default</a>
+											<a href="JAVASCRIPT:" class="button" >Default</a>
 										</div>
 								</div>
 										
@@ -498,6 +473,8 @@ if(isset($_POST['CADASTRAR'])){
 	        <script src="/js/jquery-ui.js"></script>
 		    <script src="/js/simplebar.js"></script>
 		    <script src="/js/messagebox.min.js"></script>
+	        <script src="/js/jquery.darktooltip.js"></script>
+	        <script src="/js/popr.js"></script>
 		    <script src="/index.js"></script>
 
 	</body>

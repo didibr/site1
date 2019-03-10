@@ -3948,3 +3948,8 @@ input.messagebox_content_input{
 .bgreen:hover{
 	background-color: rgba(8,241,49,0.15) !important;
 }
+.popr{
+	position: absolute;
+    left: 124px;
+    width: 200px;
+}
