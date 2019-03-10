@@ -3929,3 +3929,22 @@ input, select, textarea {
     -ms-transition: background-color 20ms linear;
     transition: background-color 1000ms linear;
 }
+input.messagebox_content_input{
+	border:solid 1px rgba(0, 0, 0, 0.49) !important;
+}
+.messagebox_button_done,.messagebox_button_fail{
+      background-color: #1e5024 !important;
+	 height:40px !important;
+	 padding:1px !important;
+	 font-size:10px !important;	
+	 line-height: 1em !important; 
+}
+.messagebox_button_fail{
+	background-color: rgba(219,24,27,0.87) !important;
+}
+.bred:hover{
+	background-color: rgba(248,7,11,0.15) !important;
+}
+.bgreen:hover{
+	background-color: rgba(8,241,49,0.15) !important;
+}

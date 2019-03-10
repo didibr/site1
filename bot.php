@@ -93,7 +93,7 @@ COMAND;
 function GetLemma($entrada){
 	putenv('GOOGLE_APPLICATION_CREDENTIALS=secret.json');
     require 'vendor/autoload.php';
-	$projectId = 'rational-camera-215416';
+	$projectId = 'rational-camera-215416'; //COLOCAR
 	$language = new LanguageClient(['projectId' => $projectId]);	
 	/* ANALIZE DE SENTIMENTO
 	$annotation = $language->analyzeSentiment($text);
@@ -129,6 +129,45 @@ function GetLemma($entrada){
 }
 
 
+function NewEntry(){
+ $mode=$_POST['newitem'];	
+ $value=$_POST['value'];
+ //$value=str_replace("'",'`',$value);
+ $DATABASE='db/data.db';   
+ $query = new PDO('sqlite:'.$DATABASE) or die('Cannot Open DataBase');
+ $comand ='';
+ $comand2 ='';
+ if($mode=='Resposta'){	 
+  $comand = "INSERT INTO respostas(resposta) VALUES('{$value}')";
+ }
+ if($mode=='Script'){	 
+  $comand = "INSERT INTO scripts(script) VALUES('{$value}')";
+ }	
+ if($mode=='Delete'){
+   if($value[3]==0){
+	   $comand = "DELETE FROM perguntas WHERE id={$value[0]};";	   
+   }
+   if($value[3]==1){
+	   $comand = "DELETE FROM respostas WHERE id={$value[1]};";
+	   $comand2= "UPDATE perguntas SET resposta_id=null WHERE resposta_id={$value[1]};";
+   }
+   if($value[3]==2){
+	   $comand = "DELETE FROM scripts WHERE id={$value[2]};";
+	   $comand2= "UPDATE respostas SET script_id=null WHERE script_id={$value[2]};";
+   }
+ }		
+  $query->query($comand);  
+	//die($comand);
+  die('OK');
+}
+
+if(isset($_POST['newitem'])){
+	session_start();
+	if(isset($_SESSION["LOGUED"]))
+    if($_SESSION["LOGUED"]['acesso']==1)
+    NewEntry();		
+	die('you Shall not Pass');
+}
 
 if(isset($_POST['in'])){
 	echo GetLemma($_POST['in']);

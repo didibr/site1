@@ -68,6 +68,7 @@ if(isset($_POST['CADASTRAR'])){
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="/css/jquery-ui.css" />
 		<link rel="stylesheet" href="/css/simplebar.css" />
+		<link rel="stylesheet" href="css/messagebox.min.css" />
 		<link rel="stylesheet" href="css/main.css" />
 		<noscript><link rel="stylesheet" href="css/noscript.css" /></noscript>
 	</head>
@@ -302,9 +303,9 @@ if(isset($_POST['CADASTRAR'])){
 <!--TABVIEW -->									
 <div id="admtabs">
   <ul>
-    <li><a href="#tabs-1">Perguntas</a></li>
-    <li><a href="#tabs-2">Respostas</a></li>    
-	<li><a href="#tabs-3">Scripts</a></li>  
+    <li><a href="#tabs-1" onClick="AISCSEL[3]=0;">Perguntas</a></li>
+    <li><a href="#tabs-2" onClick="AISCSEL[3]=1;">Respostas</a></li>    
+	<li><a href="#tabs-3" onClick="AISCSEL[3]=2;">Scripts</a></li>  
   </ul>		
 	<!--TABVIEW TAB1 -->
 	<div id="tabs-1" data-simplebar>
@@ -381,15 +382,14 @@ if(isset($_POST['CADASTRAR'])){
 									
 								<section>
 								<div class="row" align="center" style="display: block;">  
-										<div class="col-12 col-12-xsmall">											
-											<a href="#" class="button" >Default</a>
+									    <div class="col-12 col-12-xsmall">
+											<a href="JAVASCRIPT:DeleteEntry();" class="button bred" >Delete</a>
+										</div>
+										<div class="col-12 col-12-xsmall" style="margin-top: 0.5em;">						<a href="JAVASCRIPT:NovoEntry('Resposta');" class="button bgreen" >ADD Resposta</a>
 										</div>
 										<div class="col-12 col-12-xsmall" style="margin-top: 0.5em;">
-											<a href="#" class="button" >Default</a>
-										</div>
-										<div class="col-12 col-12-xsmall" style="margin-top: 0.5em;">
-											<a href="#" class="button" >Default</a>
-										</div>
+											<a href="JAVASCRIPT:NovoEntry('Script');" class="button bgreen" >ADD Script</a>
+										</div>										
 										<div class="col-12 col-12-xsmall" style="margin-top: 0.5em;">
 											<a href="#" class="button" >Default</a>
 										</div>
@@ -497,6 +497,7 @@ if(isset($_POST['CADASTRAR'])){
 			<script src="/js/main.js"></script>
 	        <script src="/js/jquery-ui.js"></script>
 		    <script src="/js/simplebar.js"></script>
+		    <script src="/js/messagebox.min.js"></script>
 		    <script src="/index.js"></script>
 
 	</body>

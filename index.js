@@ -4,8 +4,32 @@ $(document).ready(function(){
 	//$('#one').css('height',dcheight+'px');
 	//console.log($('#intro').height());
 	$( "#admtabs" ).tabs();
+	onPress('#imail',function(){$('#isenha').focus();})	
+	onPress('#isenha',function(){Logar();});
+	onPress('#cad_nome',function(){$('#cad_cpf').focus();});
+	onPress('#cad_cpf',function(){$('#cad_email').focus();});
+	onPress('#cad_email',function(){$('#cad_senha').focus();});
+	onPress('#cad_senha',function(){$('#cad_homen').focus();});
+	onPress('#cad_homen',function(){$('#cad_mulher').focus();});
+	onPress('#cad_mulher',function(){$('#cad_nasc_dia').focus();});
+	onPress('#cad_nasc_dia',function(){$('#cad_nasc_mes').focus();});
+	onPress('#cad_nasc_mes',function(){$('#cad_nasc_ano').focus();});
+	onPress('#cad_nasc_ano',function(){Cadastrar();});	
 });
 
+function MessageBox(text){
+	$.MessageBox({
+		buttonDone  : "OK",		
+    	message  : text
+		}).done(function(data){				  
+		}).fail();
+}
+
+function onPress(item,doit){
+    $(item).keypress(function(e){
+		if(e.which==13)doit();
+	});	
+}
 
 function SwapToLogin(num){
 	if(num==1){
@@ -42,7 +66,7 @@ function Logar(){
 	},
     success: function(msg){
         if(msg!='OK'){
-			alert(msg);
+			MessageBox(msg);
 		}else{
 			location.reload();
 		}
@@ -66,7 +90,7 @@ function Cadastrar(){
 'cad_nasc_ano':$('#cad_nasc_ano option:selected').val()
 	},
     success: function(msg){
-        alert(msg);
+        MessageBox(msg);
     }});			
 }
 
@@ -141,11 +165,15 @@ function PushTalk(){
     }});	
 }
 
+var AISCSEL=[null,null,null,-1];
+
 function ClickPergunta(idp,idr){
+  AISCSEL[0]=null;
    $('#PP').find('> tbody > tr').each(function(){	   
 	   var perg=$($(this).find('td')[0]).text().trim();
 	   var resp=$($(this).find('td')[2]).text().trim();
 		if(idp==perg || idr==resp){
+	        AISCSEL[0]=perg;    
 			$(this).addClass('tsel');
 		}else{
 			$(this).removeClass('tsel');
@@ -154,9 +182,11 @@ function ClickPergunta(idp,idr){
 }
 
 function ClickScript(id){
+  AISCSEL[2]=null;
    $('#SS').find('> tbody > tr').each(function(){	   
 	   var scri=$($(this).find('td')[0]).text().trim();
 		if(id==scri){
+			AISCSEL[2]=scri;
 			$(this).addClass('tsel');
 		}else{
 			$(this).removeClass('tsel');
@@ -166,12 +196,16 @@ function ClickScript(id){
 
 function ClickResponse(idr,ids){
 	var found=0;
-	var perguntas=[];
+	var respostas=[];
+	AISCSEL[1]=null;
+	AISCSEL[2]=null;
    $('#RR').find('> tbody > tr').each(function(){
-	   var perg=$($(this).find('td')[0]).text().trim();
+	   var resp=$($(this).find('td')[0]).text().trim();
 	   var scri=$($(this).find('td')[2]).text().trim();	   
-		if(idr==perg || ids==scri){
-			perguntas.push(perg);
+		if(idr==resp || ids==scri){						
+			AISCSEL[1]=resp;
+			AISCSEL[2]=scri;
+			respostas.push(resp);
 			$(this).addClass('tsel');
 			ClickScript(scri);
 			found=1;
@@ -180,10 +214,27 @@ function ClickResponse(idr,ids){
 		}
 	});	
  if(found==0)ClickScript(-1);
- return perguntas;
+ return respostas;
+}
+
+
+function SelectResposta(tabela,tr){
+	AISCSEL[1]=null;
+    tr.addClass('tsel');
+	tabela.find('> tbody > tr').each(function(){
+		if($(this).hasClass('tsel')){
+			if($(this)[0]!=tr[0])
+			$(this).removeClass('tsel');			
+		}
+	});		
+	var scrip=$(tr.find('td')[2]).text().trim();
+	var resp=$(tr.find('td')[0]).text().trim();		
+	AISCSEL[1]=resp;
+	return scrip;
 }
 
 function SelectPergunta(tabela,tr){
+	AISCSEL[0]=null;
     tr.addClass('tsel');
 	tabela.find('> tbody > tr').each(function(){
 		if($(this).hasClass('tsel')){
@@ -192,21 +243,25 @@ function SelectPergunta(tabela,tr){
 		}
 	});		
 	var resposta=$(tr.find('td')[2]).text().trim();
+	var perg=$(tr.find('td')[0]).text().trim();		
+	AISCSEL[0]=perg;
 	return resposta;
 }
 
 //ACOES DE CLICK NOS MENUS DE SCRIPT
-function SelectP(obj){ 
+function SelectP(obj){ 	
 	var tabela=$(obj).closest('table');		
 	if($(tabela).attr('id')=='PP'){
 		var resp=SelectPergunta($(tabela),$(obj));
 		ClickResponse(resp,-1);
+		AISCSEL[3]=0;
 	}
 	if($(tabela).attr('id')=='RR'){
-		var scri=SelectPergunta($(tabela),$(obj));			
+		var scri=SelectResposta($(tabela),$(obj));			
 		var resp=$($(obj).find('td')[0]).text().trim();
 		ClickScript(scri);		
-		ClickPergunta(-1,resp);		
+		ClickPergunta(-1,resp);	
+		AISCSEL[3]=1;
 	}
 	if($(tabela).attr('id')=='SS'){		
 		var scri=$($(obj).find('td')[0]).text().trim();				
@@ -214,9 +269,71 @@ function SelectP(obj){
 		if(pergarray.length==0){
 			ClickPergunta(-1,-1);
 			$($(obj)).addClass('tsel');
+            AISCSEL[2]=scri;		
 		}
 		$.each(pergarray,function(index, value){
 			ClickPergunta(-1,value);
 		});
+		AISCSEL[3]=2;
 	}
+	
+	console.log(AISCSEL);
+}
+
+
+function NovoEntry(rs){
+	$.MessageBox({
+		buttonDone  : "Add",
+		buttonFail  : "Cancel",
+    	input    : {			
+        text1    : {
+            type         : "",
+            label        : "Texto:",
+            title        : "Texto"
+        }},
+    	message  : 'Adicionar Novo '+rs+':'
+		}).done(function(data){		
+		  $.ajax({type: 'POST',url: 'bot.php', data: { 
+			'newitem':rs,		
+			'value':data['text1']		
+		  },success: function(msg){
+              MessageBox(msg);
+          }});			
+		}).fail();
+}
+
+function DelettionItem(){
+	var rs='';
+	var tab='';
+	var itext='';
+    if(AISCSEL[3]==0){rs='Pergunta:<br>';tab='#PP';}
+	if(AISCSEL[3]==1){rs='Resposta:<br>';tab='#RR';}
+	if(AISCSEL[3]==2){rs='Script:<br>';tab='#SS';}
+	$(tab).find('> tbody > tr').each(function(){
+		if($(this).hasClass('tsel')){
+		 itext=$($(this).find('td')[1]).text().trim();				
+		}
+	});		
+	if(itext.trim().length<2){
+		return '';
+	}else{
+	  return rs+itext;	
+	}	
+}
+
+function DeleteEntry(){
+  	   var rs=DelettionItem();		
+	    if(rs.trim().length<2)return;
+		$.MessageBox({
+		buttonDone  : "Sim",
+		buttonFail  : "Nao",    	
+    	message  : 'Deletar '+rs+':'
+		}).done(function(data){		
+		  $.ajax({type: 'POST',url: 'bot.php', data: { 
+			'newitem':'Delete',		
+			'value':AISCSEL		
+		  },success: function(msg){
+              MessageBox(msg);
+          }});			
+		}).fail();
 }
