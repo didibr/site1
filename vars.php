@@ -7,6 +7,6 @@
  $SITE_CONT_LINKEDIN ='';
  $SITE_CONT_INSTAGRAM='';
  $SITE_CONT_GITHUB   ='';
- $SITE_CONT_FACEBOOK ='https://www.facebook.com/mario.sergio.37604';
+ $SITE_CONT_FACEBOOK ='https://www.facebook.com/didi';
  $SITE_CONT_TWITTER  ='';
 ?>
